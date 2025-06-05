@@ -2,8 +2,9 @@
 ## Prueba tecnica API
 
 1. Clonar proyecto
-2. Cambiar las credenciales en el ```appSetting.json```
-3. Correr el siguiente comando para levantar la base de datos
+2. Abrir la solucion
+3. Cambiar las credenciales en el ```appSetting.json```
+4. Correr el siguiente comando en el package managment console para levantar la base de datos
 ```
 Update-Database
 ```

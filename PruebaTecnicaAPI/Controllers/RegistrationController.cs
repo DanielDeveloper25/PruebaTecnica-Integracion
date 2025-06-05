@@ -24,10 +24,10 @@ namespace PruebaTecnicaAPI.Controllers
 
             if (result is IDictionary<string, object> dict && dict.ContainsKey("mensaje"))
             {
-                return BadRequest(result); // {"mensaje": "mensaje de error"}
+                return BadRequest(result); 
             }
 
-            return Ok(result); // Datos del usuario creado
+            return Ok(result); 
         }
     }
 }

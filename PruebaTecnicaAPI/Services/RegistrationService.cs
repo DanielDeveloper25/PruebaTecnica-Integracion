@@ -58,24 +58,19 @@ namespace PruebaTecnicaAPI.Services
 
         public async Task<object> RegistrarUsuarioAsync(RegisterUserDto dto)
         {
-            // Validar email con regex
             var emailRegex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
             if (!emailRegex.IsMatch(dto.Email))
                 return new { mensaje = "El formato del correo es inválido" };
 
-            // Validar contraseña con regex configurable
             var passwordRegex = new Regex(_configuration["PasswordRegex"] ?? "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$");
             if (!passwordRegex.IsMatch(dto.Password))
                 return new { mensaje = "La contraseña no cumple con los requisitos de seguridad" };
 
-            // Verificar si el email ya existe
             if (_context.Users.Any(u => u.Email == dto.Email))
                 return new { mensaje = "El correo ya registrado" };
 
-            // Encriptar contraseña
             var encryptedPassword = EncriptSHA256(dto.Password);
 
-            // Crear usuario
             var user = new User
             {
                 Id = Guid.NewGuid(),
@@ -85,16 +80,15 @@ namespace PruebaTecnicaAPI.Services
                 Created = DateTime.UtcNow,
                 Modified = DateTime.UtcNow,
                 LastLogin = DateTime.UtcNow,
-                Token = "", // Temporal, se actualiza luego
+                Token = "", 
                 IsActive = true
             };
 
-            // Agregar teléfonos
             foreach (var phone in dto.Phones)
             {
                 user.Phones.Add(new Phone
                 {
-                    Id = 0, // será autogenerado
+                    Id = 0, 
                     Number = phone.Number,
                     CityCode = phone.CityCode,
                     CountryCode = phone.CountryCode,
@@ -102,15 +96,12 @@ namespace PruebaTecnicaAPI.Services
                 });
             }
 
-            // Generar token y asignar
             var token = generateJWT(user);
             user.Token = token;
 
-            // Guardar en DB
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            // Retornar datos esperados
             return new
             {
                 id = user.Id,

@@ -8,12 +8,13 @@
 ```
 Update-Database
 ```
-4. Para iniciar el programa utilice los siguientes comandos
+5. Para iniciar el programa utilice los siguientes comandos
 ```
 1. cd PruebaTecnicaAPI
 2. dotnet run
 ```
-5. Y para realizar los test
+6. Para probar el programa visite ```http://localhost:5277/swagger```
+7. Y para realizar los test
 ```
 1. cd RegistrationTest
 2. dotnet test

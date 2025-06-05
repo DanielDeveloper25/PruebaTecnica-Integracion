@@ -1,0 +1,26 @@
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS Code
+.vscode/
+
+# Visual Studio working folder
+.vs/
+
+# Dotnet generated files
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Others
+*.log
+*.tlog
+*.cache
+*.ide

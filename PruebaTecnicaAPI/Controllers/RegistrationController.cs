@@ -29,5 +29,16 @@ namespace PruebaTecnicaAPI.Controllers
 
             return Ok(result); 
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginUserDto dto)
+        {
+            var result = await _registrationService.LoginUsuarioAsync(dto);
+
+            if (result is IDictionary<string, object> dict && dict.ContainsKey("mensaje"))
+                return BadRequest(result);
+
+            return Ok(result);
+        }
     }
 }

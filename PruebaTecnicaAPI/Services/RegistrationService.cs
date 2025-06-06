@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using PruebaTecnicaAPI.Models.DTOs;
 using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore;
 
 namespace PruebaTecnicaAPI.Services
 {
@@ -100,6 +101,37 @@ namespace PruebaTecnicaAPI.Services
             user.Token = token;
 
             _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return new
+            {
+                id = user.Id,
+                created = user.Created,
+                modified = user.Modified,
+                last_login = user.LastLogin,
+                token = user.Token,
+                isactive = user.IsActive
+            };
+        }
+
+        public async Task<object> LoginUsuarioAsync(LoginUserDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
+                return new { mensaje = "Correo y contraseña son obligatorios" };
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+
+            if (user == null)
+                return new { mensaje = "Usuario no encontrado" };
+
+            string passwordEncrypted = EncriptSHA256(dto.Password);
+
+            if (user.Password != passwordEncrypted)
+                return new { mensaje = "Contraseña incorrecta" };
+
+            string token = generateJWT(user);
+            user.Token = token;
+            user.LastLogin = DateTime.UtcNow;
             await _context.SaveChangesAsync();
 
             return new

@@ -81,5 +81,53 @@ namespace RegistrationTest
             Assert.IsTrue(response);
         }
 
+        [TestMethod]
+        public async Task TestLoginUsuarioAsync()
+        {
+            var options = new DbContextOptionsBuilder<DbpruebaTecnicaContext>()
+                .UseInMemoryDatabase(databaseName: "LoginTestDB")
+                .Options;
+
+            var context = new DbpruebaTecnicaContext(options);
+
+            var config = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string>
+                {
+            { "Jwt:key", "test_key_1234567890123456789012345567890" },
+            { "PasswordRegex", "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$" }
+                }!).Build();
+
+            var service = new RegistrationService(config, context);
+
+            var password = "abc123";
+            var user = new User
+            {
+                Id = Guid.NewGuid(),
+                Name = "Test Login",
+                Email = "login@test.com",
+                Password = service.EncriptSHA256(password),
+                Created = DateTime.UtcNow,
+                Modified = DateTime.UtcNow,
+                LastLogin = DateTime.UtcNow,
+                Token = "",
+                IsActive = true
+            };
+
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+
+            var loginDto = new LoginUserDto
+            {
+                Email = "login@test.com",
+                Password = "abc123"
+            };
+
+            var result = await service.LoginUsuarioAsync(loginDto);
+
+            Assert.IsInstanceOfType(result, typeof(object));
+            var hasToken = result.GetType().GetProperty("token") != null;
+            Assert.IsTrue(hasToken);
+        }
+
     }
 }
